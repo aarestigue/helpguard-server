@@ -120,6 +120,8 @@ Components:
       type: String, 
       required: true, 
       unique: true },
+      trim : true
+}
           
  password: { 
      type: String, 
@@ -132,16 +134,29 @@ Components:
      type:String,
      required: true,
  }
+
+telephone: {
+     type:Number,
+     required: true,
+ }
 company: { 
     type: Schema.Types.ObjectId, 
     ref:'Company',
-    required: true,
+    required: false,
     },
         
 role: { 
-    type: [String]
-    required: true,
-    default : [admin, agent]
+    type: String,
+    required: false,
+    enum : ['admin', 'agent', 'analyst','client'],
+    default : 'agent'    
+    },
+        
+clientRole: { 
+    type: String,
+    required: false,
+    enum : ['owner', 'standard', 'partners'],
+    default : 'standard'    
     },
         
         
@@ -163,7 +178,40 @@ chat: [ {
     timestamps:true,
 }
 ```
+**Team model**
 
+```javascript
+
+ teamName: {
+     type:String,
+     required: true,
+ }
+ 
+        
+ teamMembers: [ { 
+    type: Schema.Types.ObjectId, 
+    ref:'User' } ]
+
+company: { 
+    type: Schema.Types.ObjectId, 
+    ref:'Company',
+    required: false,
+    },
+        
+teamAccess: { 
+    type: String,
+    required: false,
+    enum : ['admin', 'agent',                       'analyst'],
+    default : 'agent'    
+    },
+        
+
+}
+
+{
+    timestamps:true,
+}
+```
 
 
 **Company model**
@@ -175,17 +223,31 @@ chat: [ {
     type:String,
     required: true,
  }
+     
+{
+    owner: {
+    type: Schema.Types.ObjectId, 
+    ref:'User',
+    type:String,
+    required: false,
+ }
     users: [{ 
     type: Schema.Types.ObjectId, 
     ref:'User',
     required: true,
     }],
         
-type: { 
-    type: [String]
+    category: { 
+    type: String,
     required: true,
-    default : [vip, standard]
+    enum : ['paid', 'free user', 'trial'],
+    default : 'free user'    
     },
+
+    becameClientDate: {
+    type:Date,
+    required: false,
+     }
         
         
 teams: [ { 
@@ -196,9 +258,10 @@ tickets: [ {
     type: Schema.Types.ObjectId, 
     ref:'Ticket' } ]
     
-chat: [ { 
+chats: [ { 
     type: Schema.Types.ObjectId, 
     ref:'Chat' } ]
+    
 
 }
 
@@ -212,8 +275,15 @@ chat: [ {
 
 **Ticket model**
 
-```javascript
+```javascript=
 {
+    
+    {
+    subject: {
+    type:String,
+    required: true,
+    }
+        
     description: {
     type:String,
     required: true,
@@ -222,14 +292,116 @@ chat: [ {
     category: {
     type:String,
     required: true,
+    enum : ['Technical issue', 'How to', 'Sales     question', 'Cancel my plan', 'Feature           request'],
+    default : 'Technical issue'    
      }
     
     priority: {
     type:String,
-    required: true,
+    required: false,
+    enum : ['High', 'Medium', 'Low'],
+    default : 'Low' 
      }
- 
-  
+    
+    status: {
+    type:String,
+    required: false,
+    enum : ['New','Assigned', 'In progress',       'Solved', 'Discarded','Stand by','Closed'],
+    default : 'New' 
+     }
+        
+    agent: {
+    type: Schema.Types.ObjectId, 
+    ref:'User',
+    type:String,
+    required: false,
+ }
+        
+    user: {
+    type: Schema.Types.ObjectId, 
+    ref:'User',
+    type:String,
+    required: false,
+ }
+        
+    company: {
+    type: Schema.Types.ObjectId, 
+    ref:'Company',
+    type:String,
+    required: false,
+ }
+        
+    closeDate: {
+    type:Date,
+    required: false,
+     }
+    }
+    
+    {
+    timestamps:true,
+}
+        
+```
+        
+**Chat model**
+
+```javascript=
+
+  {  
+    {
+    subject: {
+    type:String,
+    required: true,
+    }
+        
+    
+    category: {
+    type:String,
+    required: true,
+    enum : ['Technical issue', 'How to', 'Sales     question', 'Cancel my plan', 'Feature           request'],
+    default : 'Technical issue'    
+     }
+    
+    priority: {
+    type:String,
+    required: false,
+    enum : ['High', 'Medium', 'Low'],
+    default : 'Low' 
+     }
+    
+    status: {
+    type:String,
+    required: false,
+    enum : ['New','Assigned', 'In progress',       'Solved', 'No response','Sent as               ticket','Closed'],
+    default : 'New' 
+     }
+        
+    agent: {
+    type: Schema.Types.ObjectId, 
+    ref:'User',
+    type:String,
+    required: false,
+ }
+        
+    user: {
+    type: Schema.Types.ObjectId, 
+    ref:'User',
+    type:String,
+    required: false,
+ }
+        
+    company: {
+    type: Schema.Types.ObjectId, 
+    ref:'Company',
+    type:String,
+    required: false,
+ }
+        
+    closeDate: {
+    type:Date,
+    required: false,
+     }
+        
 }
 
 {
