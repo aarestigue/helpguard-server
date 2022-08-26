@@ -7,7 +7,9 @@ const userSchema = new Schema(
         type: String, 
         required: true, 
         unique: true,
-        trim : true
+        lowercase: true,
+        trim: true,
+        match: [/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g, 'Please use a valid email address']
     },
             
    password: { 
@@ -34,6 +36,13 @@ const userSchema = new Schema(
       ref:'Company',
       required: false
       },
+
+  companyOwner: { 
+        type: Boolean, 
+        default: false,
+        },
+
+  
           
   role: { 
       type: String,
@@ -48,6 +57,10 @@ const userSchema = new Schema(
       enum : ['owner', 'standard', 'partners'],
       default : 'standard'    
       },
+
+  profileImg : {
+    type: String,
+  },
           
           
   teams: [ { 
@@ -58,7 +71,7 @@ const userSchema = new Schema(
       type: Schema.Types.ObjectId, 
       ref:'Ticket' } ],
       
-  chat: [ { 
+  chats: [ { 
       type: Schema.Types.ObjectId, 
       ref:'Chat' } ],
   
