@@ -26,23 +26,29 @@ const chatSchema = new Schema(
     status: {
     type:String,
     required: false,
-    enum : ['New','Assigned', 'In progress',       'Solved', 'No response','Sent as               ticket','Closed'],
+    enum : ['New','Assigned', 'Solved', 'No response','Sent as ticket','Closed'],
     default : 'New' 
      },
         
-    agent: {
+    owner: {
     type: Schema.Types.ObjectId, 
     ref:'User',
     type:String,
     required: false,
     },
         
-    user: {
-    type: Schema.Types.ObjectId, 
-    ref:'User',
-    type:String,
-    required: false,
-    },
+    sender: {
+        type: Schema.Types.ObjectId, 
+        refPath: 'model_type',
+        type:String,
+        required: false,
+        },
+
+    model_type: {
+            type: String, 
+            enum: ['User', 'Client'], 
+            required: true
+          },
         
     company: {
     type: Schema.Types.ObjectId, 

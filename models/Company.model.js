@@ -8,19 +8,24 @@ const companySchema = new Schema(
         required: true,
         },
          
-    
-        owner: {
-        type: Schema.Types.ObjectId, 
-        ref:'User',
-        type:String,
-        required: false,
-        },
 
         users: [{ 
         type: Schema.Types.ObjectId, 
-        ref:'User',
-        required: true,
+        refPath:'model_type',
+        required: false,
         }],
+
+        model_type: {
+            type: String, 
+            enum: ['User', 'Client'], 
+            required: false
+          },
+
+        owner: {
+            type: Schema.Types.ObjectId, 
+            ref:'User',
+            required: false,
+            },
             
         category: { 
         type: String,

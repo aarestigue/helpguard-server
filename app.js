@@ -19,6 +19,15 @@ require("./config")(app);
 const allRoutes = require("./routes/index.routes");
 app.use("/api", allRoutes);
 
+const userRoutes = require("./routes/user.routes");
+app.use("/api", userRoutes);
+
+const clientRoutes = require("./routes/client.routes");
+app.use("/api", clientRoutes);
+
+const companyRoutes = require("./routes/company.routes");
+app.use("/api", companyRoutes);
+
 const authRoutes = require("./routes/auth.routes");
 app.use("/", authRoutes);
 

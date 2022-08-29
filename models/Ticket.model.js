@@ -17,7 +17,7 @@ const ticketSchema = new Schema(
         category: {
         type:String,
         required: true,
-        enum : ['Technical issue', 'How to', 'Sales     question', 'Cancel my plan', 'Feature           request'],
+        enum : ['Technical issue', 'How to', 'Sales question', 'Cancel my plan', 'Feature           request'],
         default : 'Technical issue'    
          },
         
@@ -35,19 +35,25 @@ const ticketSchema = new Schema(
         default : 'New' 
          },
             
-        agent: {
+        owner: {
         type: Schema.Types.ObjectId, 
         ref:'User',
         type:String,
         required: false,
         },
             
-        user: {
+        sender: {
         type: Schema.Types.ObjectId, 
-        ref:'User',
+        refPath: 'model_type',
         type:String,
         required: false,
         },
+
+        model_type: {
+            type: String, 
+            enum: ['User', 'Client'], 
+            required: true
+          },
             
         company: {
         type: Schema.Types.ObjectId, 

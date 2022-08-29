@@ -37,12 +37,11 @@ const userSchema = new Schema(
       required: false
       },
 
-  companyOwner: { 
-        type: Boolean, 
-        default: false,
-        },
 
-  
+  hgEmployee: {
+    type: Boolean,
+    default: false,
+  },
           
   role: { 
       type: String,
@@ -51,18 +50,51 @@ const userSchema = new Schema(
       default : 'agent'    
       },
           
-  clientRole: { 
+  persona: { 
       type: String,
       required: false,
-      enum : ['owner', 'standard', 'partners'],
-      default : 'standard'    
+      enum : ['owner', 'executive', 'manager', 'partners'],
+      default : 'executive'    
       },
+
+  owner: {
+        type: Schema.Types.ObjectId, 
+        ref:'User',
+        
+        required: false,
+        },
+        
+    category: { 
+    type: String,
+    required: false,
+    enum : ['paid', 'free user', 'trial'],
+    default : 'free user'    
+    },
+
+    becameClientDate: {
+    type:Date,
+    required: false,
+     },
 
   profileImg : {
     type: String,
   },
           
           
+  assigned: [{ 
+      type: Schema.Types.ObjectId, 
+      refPath:'model_type' }],
+  
+  model_type: {
+    type: String, 
+    enum: ['User', 'Client'], 
+    required: false
+  },
+
+  assignedCompanies: [ { 
+    type: Schema.Types.ObjectId, 
+    ref:'Company' } ],
+
   teams: [ { 
       type: Schema.Types.ObjectId, 
       ref:'Team' } ],
@@ -74,6 +106,10 @@ const userSchema = new Schema(
   chats: [ { 
       type: Schema.Types.ObjectId, 
       ref:'Chat' } ],
+
+  tasks: [ { 
+      type: Schema.Types.ObjectId, 
+      ref:'Task' } ],
   
   },
   

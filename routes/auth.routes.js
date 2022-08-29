@@ -20,7 +20,7 @@ router.get('/verify', isAuthenticated, (req, res) => {
 });
 
 router.post("/signup", /* isLoggedOut, */ (req, res) => {
-  const { email, password, name, lastName, telephone } = req.body;
+  const { email, password, name, lastName, telephone, hgEmployee } = req.body;
 
   if (!email) {
     return res
@@ -86,6 +86,7 @@ router.post("/signup", /* isLoggedOut, */ (req, res) => {
           name,
           lastName,
           telephone,
+          hgEmployee,
         });
       })
       .then((user) => {
