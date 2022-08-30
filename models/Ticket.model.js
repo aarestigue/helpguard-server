@@ -31,34 +31,36 @@ const ticketSchema = new Schema(
         status: {
         type:String,
         required: false,
-        enum : ['New','Assigned', 'In progress',       'Solved', 'Discarded','Stand by','Closed'],
+        enum : ['New','Assigned', 'In progress', 'Solved', 'Discarded','Stand by','Closed'],
         default : 'New' 
          },
+
+        statusColumn: { 
+            type: Schema.Types.ObjectId, 
+            ref:'TicketColumn',
+            required: false,
+        },
             
         owner: {
         type: Schema.Types.ObjectId, 
         ref:'User',
-        type:String,
+        
         required: false,
         },
             
         sender: {
         type: Schema.Types.ObjectId, 
-        refPath: 'model_type',
-        type:String,
-        required: false,
+        ref: 'User',
+        
+        required: true,
         },
 
-        model_type: {
-            type: String, 
-            enum: ['User', 'Client'], 
-            required: true
-          },
+       
             
         company: {
         type: Schema.Types.ObjectId, 
         ref:'Company',
-        type:String,
+        
         required: false,
         },
             

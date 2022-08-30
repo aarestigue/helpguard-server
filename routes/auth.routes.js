@@ -25,7 +25,7 @@ router.post("/signup", /* isLoggedOut, */ (req, res) => {
   if (!email) {
     return res
       .status(400)
-      .json({ errorMessage: "Please provide your username." });
+      .json({ errorMessage: "Please provide your email." });
   }
 
   if (password.length < 8) {
@@ -47,11 +47,7 @@ router.post("/signup", /* isLoggedOut, */ (req, res) => {
       .json({ errorMessage: "Please provide your last name." });
   }
 
-  if (!telephone) {
-    return res
-      .status(400)
-      .json({ errorMessage: "Please provide your telephone." });
-  }
+
 
   //   ! This use case is using a regular expression to control for special characters and min length
   /*
@@ -142,10 +138,10 @@ router.post("/login",/*  isLoggedOut, */ (req, res, next) => {
         
 
         //DEstructuring what we want from the user
-        const { _id, username } = user;
+        const { _id, email } = user;
 
         //Creating the payload with the properties we want to save on the token
-        const payload = { _id, username };
+        const payload = { _id, email };
 
         //Creating the token
 

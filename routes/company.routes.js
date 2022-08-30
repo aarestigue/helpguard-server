@@ -13,9 +13,10 @@ const Task = require('../models/Task.model')
 // Create Company
 
 router.post('/companies', (req, res, next) => {
-    const {name, owner, becameClientDate, category} = req.body;
-  
-    Company.create({ name, owner, becameClientDate, category})
+    const {name, becameClientDate, category, users} = req.body;
+    console.log(req.payload)
+    const user = req.payload
+    Company.create({ name, owner: user._id, becameClientDate, category, users})
       .then((response) => res.status(201).json(response))
       .catch((err) => res.json(err));
   });
@@ -24,38 +25,68 @@ router.post('/companies', (req, res, next) => {
 
   router.get('/companies', (req, res, next) => {
    
-  
     Company.find()
     .populate('users')
     .populate('owner')
-    .then((companies) => res.status(200).json(companies))
+    .then((companies) => {
+        console.log(companies)
+        res.status(200).json(companies)})
     .catch((err) => res.json(err));
   });
 
   //Edit Company (FOR HELPGUARD CUSTOMERS)
 
-  router.put('/companies/:companyId', (req, res, next) => {
-    const { companyId } = req.params;
-    const { name, owner, users, category, teams} = req.body;
-  
-    Company.findByIdAndUpdate(companyId, {name, owner, users, category, teams}, { new: true })
-      .then((company) => {
-        res.status(201).json(company)
-        // Add company to Agent into assigned Companies
+  router.put('/companies/:companyId', async (req, res, next) => {
+    try {
+      const { companyId } = req.params;
+      const { name, owner, users, category, teams} = req.body;
 
-        /* if (!User.findById(owner).assignedCompanies.includes(companyId)) { */
-        const updateUser =  User.findByIdAndUpdate(owner, {$push: {assignedCompanies: company._id}});
-      /* } */
-        console.log(owner)
-        return {company, updateUser} 
-      })
-      .then((company) => {
-
-        //Add company to users working for that company
-        company.users.map((user) => {Client.findByIdAndUpdate(user, {$push: {company: companyId}});})
-        }) 
+      const company = await Company.findByIdAndUpdate(companyId, {name, owner, users, category, teams}, { new: true });
       
+      await  User.findByIdAndUpdate(owner, {$push: {assignedCompanies: company._id}});
+      
+      await company.users.map((user) => { User.findByIdAndUpdate(user, {$push: {company: companyId}});})
+      
+
+      res.status(201).json(company)
+    } catch (error) {
+      next(error)
+    }
+  });
+
+  // Get all Company Users (Users & Client)
+
+  router.get('/all-users', async (req, res, next) => {
+    try {
+      const allUsers = await User.find();
+      const allClients = await Client.find()
+      const merge = (first, second) => {
+  for(let i=0; i<second.length; i++) {
+    first.push(second[i]);
+  }
+  return first;
+}
+      const users = merge(allUsers, allClients)
+
+      res.status(200).json(users)
+    } catch (error) {
+      next(error)
+    }
+    
+  })
+
+  //Delete Company
+
+  router.delete('/companies/:companyId', (req, res, next) => {
+    const { companyId } = req.params;
+  
+    Company.findByIdAndRemove(companyId)
+      .then(() =>
+        res.status(200).json({ message: `The project with id ${companyId} was successfully deleted` })
+      )
       .catch((err) => res.json(err));
   });
+
+
 
   module.exports = router;
