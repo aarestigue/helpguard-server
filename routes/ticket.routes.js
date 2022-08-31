@@ -30,6 +30,10 @@ router.post('/tickets', async (req, res, next) => {
       
       await Company.findByIdAndUpdate(company, {$push: {tickets: newTicket._id}});
 
+      await TicketColumn.findByIdAndUpdate(statusColumn, {$push: {tickets: newTicket._id}});
+
+
+
      res.status(201).json(newTicket)
     } catch (error) {
         next(error)
@@ -81,7 +85,7 @@ router.post('/tickets', async (req, res, next) => {
       
       await Company.findByIdAndUpdate(company, {$push: {tickets: ticket._id}});
 
-      await TicketColumn.findByIdAndUpdate(state, {$push: {tickets: ticket._id}});
+      await TicketColumn.findByIdAndUpdate(statusColumn, {$push: {tickets: ticket._id}});
       
 
       res.status(201).json(ticket)
@@ -92,14 +96,33 @@ router.post('/tickets', async (req, res, next) => {
 
   // Delete Ticket
 
-  router.delete('/tickets/:ticketId', (req, res, next) => {
+  router.delete('/tickets/:ticketId', async (req, res, next) => {
     const { ticketId } = req.params;
+
+    try {
+
+    const ticket = await Ticket.findById(ticketId);
+
+   const company = await ticket.company
+
+    console.log(company)
+
+
+    await TicketColumn.findByIdAndDelete(company, {$pull:{tickets: ticketId}});
+
+    await User.findByIdAndDelete(ticket.owner, {$pull:{tickets: ticketId}});
+
+    await User.findByIdAndDelete(ticket.sender, {$pull:{tickets: ticketId}});
+
+    await Company.findByIdAndDelete(ticket.sender, {$pull:{tickets: ticketId}});
+
+    await Ticket.findByIdAndRemove(ticketId)
+    
+    res.status(200).json({ message: `The project with id ${ticketId} was successfully deleted` })
+    }catch (error) {
+        next(error)
+      }
   
-    Ticket.findByIdAndRemove(ticketId)
-      .then(() =>
-        res.status(200).json({ message: `The project with id ${ticketId} was successfully deleted` })
-      )
-      .catch((err) => res.json(err));
   });
 
   // Create Ticket Column (state)
@@ -132,6 +155,29 @@ router.post('/tickets', async (req, res, next) => {
     .catch((err) => res.json(err));
   });
 
+  //Edit ticket column state
+
+  router.put('/tickets-states/change', async (req, res, next) => {
+
+    try {
+     
+      const {source, destination, ticket} = req.body;
+
+      //Remove from source
+    await TicketColumn.findByIdAndUpdate(source, {$pull: {tickets: ticket}}, { new: true });
+      
+    //Adding to the destination
+    await TicketColumn.findByIdAndUpdate(destination, {$push: {tickets: ticket}}, { new: true });
+
+    //Change the ticket
+    await Ticket.findByIdAndUpdate(ticket, {statusColumn: destination})
+
+      res.status(201).json({message: "Tickets changed"})
+    } catch (error) {
+      next(error)
+    }
+  });
+
   // Edit Ticket Columns
 
 
@@ -151,6 +197,28 @@ router.post('/tickets', async (req, res, next) => {
     }
   });
 
+  
+
+  // Edit Ticket Column (Remove only one ticket)
+  
+  router.put('/tickets-states/:stateId/remove-ticket/:ticketId', async (req, res, next) => {
+
+    try {
+      const { stateId, ticketId } = req.params;
+      
+
+      const ticketState = await TicketColumn.findByIdAndUpdate(stateId, {$pull: {tickets: ticketId}}, { new: true });
+      
+     
+      
+      res.status(201).json(ticketState)
+    } catch (error) {
+      next(error)
+    }
+  });
+
+
+
   // Delete Ticket Columns
 
   router.delete('/tickets-states/:stateId', (req, res, next) => {
@@ -158,6 +226,7 @@ router.post('/tickets', async (req, res, next) => {
   
     TicketColumn.findByIdAndRemove(stateId)
       .then(() =>
+        
         res.status(200).json({ message: `The project with id ${stateId} was successfully deleted` })
       )
       .catch((err) => res.json(err));

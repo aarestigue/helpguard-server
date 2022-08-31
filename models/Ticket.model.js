@@ -13,6 +13,11 @@ const ticketSchema = new Schema(
         type:String,
         required: true,
         },
+
+        comments:{
+        type:String,
+        required: false,
+        },
         
         category: {
         type:String,
