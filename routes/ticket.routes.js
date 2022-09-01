@@ -16,13 +16,13 @@ const TicketColumn = require("../models/TicketColumn.model");
 
 router.post('/tickets', async (req, res, next) => {
 
-    const {subject, description, category, owner, sender, company, statusColumn} = req.body;
+    const {subject, description, category, owner, sender, company, statusColumn, status} = req.body;
     /* console.log(req.payload)
     const sender = req.payload */
 
     try {
 
-     let newTicket = await  Ticket.create({ sender, subject, description, category, owner, company, statusColumn});
+     let newTicket = await  Ticket.create({ sender, subject, description, category, owner, company, statusColumn, status});
      
      await  User.findByIdAndUpdate(owner, {$push: {tickets: newTicket._id}});
 
@@ -48,6 +48,7 @@ router.post('/tickets', async (req, res, next) => {
     Ticket.find()
     .populate('sender')
     .populate('owner')
+    .populate('statusColumn')
     .then((tickets) => {
         console.log(tickets)
         res.status(200).json(tickets)})

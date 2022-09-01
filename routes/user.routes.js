@@ -1,4 +1,12 @@
 const router = require("express").Router();
+const axios = require('axios').default;
+const hubspot = require('@hubspot/api-client')
+
+
+const hubspotClient = new hubspot.Client({ accessToken: process.env.HUBSPOT_TOKEN })
+
+
+
 const authRoutes = require("./auth.routes");
 const fileUploader = require('../config/cloudinary.config');
 
@@ -14,25 +22,47 @@ const Task = require('../models/Task.model')
 //Get all users
 
 
-router.get('/users', (req, res, next) => {
+router.get('/users', async (req, res, next) => {
+
+  try{
+
+   const users = await User.find()
+  .populate('assigned')
+  .populate('assignedCompanies')
+  .populate('owner')
+  .populate('company')
+
+  const hubspotData = await axios.get('https://api.hubapi.com/crm/v3/objects/contacts',
+  {
+    headers: {
+      'Authorization': `Bearer ${process.env.HUBSPOT_TOKEN}`,
+      'Content-Type': 'application/json'
+    }
+  },
+  (err, data) => {
+    console.log(hubspotData)
+    // Handle the API response
+  }
+);
+
+  res.status(200).json(users)
+
+  }
+  catch(err){
+        res.json(err)
+    }
+    
    
-  
-    User.find()
-    .populate('assigned')
-    .populate('assignedCompanies')
-    .populate('owner')
-    .populate('company')
-    .then((companies) => res.status(200).json(companies))
-    .catch((err) => res.json(err));
   });
 
 //Create a User (Client)
 
 router.post('/users', (req, res, next) => {
     const {name, lastName, email, telephone, owner, company, role} = req.body;
-    console.log(req.payload)
-    const user = req.payload
-    User.create({ name, owner: user._id, lastName, email, telephone, company, role})
+    
+    const user = req.payload;
+    console.log(req.payload);
+    User.create({ name, owner: owner._id, lastName, email, telephone, company, role})
       .then((response) => res.status(201).json(response))
       .catch((err) => res.json(err));
   });
@@ -64,6 +94,14 @@ router.post('/users', (req, res, next) => {
     
     
   });
+
+// Calling Hubspot CRM API - Get all Contacts
+
+
+
+  
+
+
 
   module.exports = router;
 
