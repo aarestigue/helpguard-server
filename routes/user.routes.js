@@ -32,18 +32,7 @@ router.get('/users', async (req, res, next) => {
   .populate('owner')
   .populate('company')
 
-  const hubspotData = await axios.get('https://api.hubapi.com/crm/v3/objects/contacts',
-  {
-    headers: {
-      'Authorization': `Bearer ${process.env.HUBSPOT_TOKEN}`,
-      'Content-Type': 'application/json'
-    }
-  },
-  (err, data) => {
-    console.log(hubspotData)
-    // Handle the API response
-  }
-);
+  
 
   res.status(200).json(users)
 
