@@ -14,21 +14,21 @@ const userSchema = new Schema(
             
    password: { 
        type: String, 
-       required: true },
+       required: false },
 
    name: {
        type:String,
-       required: true,
+       required: false,
    },
 
    lastName: {
        type:String,
-       required: true,
+       required: false,
    },
   
   telephone: {
        type:Number,
-       required: true,
+       required: false,
    },
 
   company: { 
