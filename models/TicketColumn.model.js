@@ -16,6 +16,11 @@ const ticketColumnSchema = new Schema(
     tickets: [ { 
         type: Schema.Types.ObjectId, 
         ref:'Ticket' } ],
+
+    isClosed: {
+            type: Boolean,
+            default: false,
+          },
     
     }
 )
