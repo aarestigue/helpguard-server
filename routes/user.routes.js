@@ -84,13 +84,33 @@ router.post('/users', (req, res, next) => {
     
   });
 
-// Calling Hubspot CRM API - Get all Contacts
+// User detail
 
+router.get('/users/:userId', async (req, res, next) => {
+const{userId} = req.params;
 
+  try{
+
+   const users = await User.findById(userId)
+  .populate('assigned')
+  .populate('assignedCompanies')
+  .populate('owner')
+  .populate('company')
+  .populate('tickets')
 
   
 
+  res.status(200).json(users)
+
+  }
+  catch(err){
+        res.json(err)
+    }
+    
+   
+  });
 
 
-  module.exports = router;
+
+module.exports = router;
 

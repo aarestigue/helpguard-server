@@ -16,9 +16,9 @@ const TicketColumn = require("../models/TicketColumn.model");
 
 router.post('/tickets', async (req, res, next) => {
 
-    const {subject, description, category, owner, sender, company, statusColumn, status} = req.body;
-    /* console.log(req.payload)
-    const sender = req.payload */
+    const {subject, description, category, owner, company, statusColumn, status} = req.body;
+    console.log(req.payload)
+    const sender = req.payload
 
     try {
 

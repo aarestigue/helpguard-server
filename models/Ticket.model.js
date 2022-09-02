@@ -43,6 +43,7 @@ const ticketSchema = new Schema(
         statusColumn: { 
             type: Schema.Types.ObjectId, 
             ref:'TicketColumn',
+            default:'6311f7de99920a174003756b',
             required: false,
         },
             
@@ -57,7 +58,7 @@ const ticketSchema = new Schema(
         type: Schema.Types.ObjectId, 
         ref: 'User',
         
-        required: true,
+        required: false,
         },
 
        
